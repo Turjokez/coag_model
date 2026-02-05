@@ -8,3 +8,6 @@
 # Generated outputs
 output/
 *.mat
+
+# Accidental nested repo
+coag_model/
