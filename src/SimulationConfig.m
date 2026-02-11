@@ -48,6 +48,13 @@ classdef SimulationConfig < matlab.mixin.Copyable
         % Disaggregation parameters
         c3 = 0.02;             % For curvilinear kernel (disagg strength)
         c4 = 1.45;             % For curvilinear kernel
+        disagg_mode = 'legacy';     % 'legacy' or 'operator_split'
+        disagg_outer_dt = 1/24;     % days (1 hour) for operator-split loop
+        disagg_frac_next = 2/3;     % fraction to next smaller bin
+        disagg_C = 3.0;             % D_max = C * epsilon^(-gamma), C in mm
+        disagg_gamma = 0.15;        % exponent for D_max scaling
+        disagg_epsilon = [];        % turbulence dissipation rate (scalar or function handle)
+        disagg_dmax_cm = [];        % optional override for D_max in cm
         
         % Parameters for solving equations
         t_init = 0.0;          % Initial time for integrations [d]
@@ -100,6 +107,24 @@ classdef SimulationConfig < matlab.mixin.Copyable
             end
             if isprop(obj,'sinking_scale') && ~isempty(obj.sinking_scale)
                 assert(isfinite(obj.sinking_scale) && obj.sinking_scale >= 0, 'sinking_scale must be finite and >= 0');
+            end
+            if isprop(obj,'disagg_mode') && ~isempty(obj.disagg_mode)
+                mode = lower(string(obj.disagg_mode));
+                valid_modes = ["legacy","operator_split"];
+                assert(any(mode == valid_modes), 'disagg_mode must be legacy or operator_split');
+            end
+            if isprop(obj,'disagg_outer_dt') && ~isempty(obj.disagg_outer_dt)
+                assert(isfinite(obj.disagg_outer_dt) && obj.disagg_outer_dt > 0, 'disagg_outer_dt must be > 0');
+            end
+            if isprop(obj,'disagg_frac_next') && ~isempty(obj.disagg_frac_next)
+                assert(obj.disagg_frac_next >= 0 && obj.disagg_frac_next <= 1, 'disagg_frac_next must be in [0,1]');
+            end
+            if isprop(obj,'enable_disagg') && obj.enable_disagg
+                if isprop(obj,'disagg_mode') && strcmpi(string(obj.disagg_mode), 'operator_split')
+                    has_dmax = isprop(obj,'disagg_dmax_cm') && ~isempty(obj.disagg_dmax_cm);
+                    has_eps  = isprop(obj,'disagg_epsilon') && ~isempty(obj.disagg_epsilon);
+                    assert(has_dmax || has_eps, 'operator_split disagg needs disagg_dmax_cm or disagg_epsilon');
+                end
             end
             % Add more validation as needed
         end

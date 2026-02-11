@@ -65,6 +65,7 @@ classdef CoagulationSimulation < handle
             else
                 tspan = p.Results.tspan;
             end
+            tspan = tspan(:);
 
             % Initial condition
             if isempty(p.Results.v0)
@@ -83,16 +84,37 @@ classdef CoagulationSimulation < handle
             obj.operators.betas = betas; % keep for diagnostics
 
             % RHS (betas + linear + disagg + config)
+            disagg_mode = "legacy";
+            if isprop(obj.config,'disagg_mode') && ~isempty(obj.config.disagg_mode)
+                disagg_mode = lower(string(obj.config.disagg_mode));
+            end
+            do_operator_split = false;
+            if isprop(obj.config,'enable_disagg') && ~isempty(obj.config.enable_disagg)
+                if logical(obj.config.enable_disagg) && disagg_mode == "operator_split"
+                    do_operator_split = true;
+                end
+            end
+
+            rhs_cfg = obj.config;
+            if do_operator_split
+                rhs_cfg = obj.config.copy();
+                rhs_cfg.enable_disagg = false; % prevent legacy disagg in RHS
+            end
+
             obj.rhs = CoagulationRHS( ...
                 betas, obj.operators.linear, ...
                 obj.operators.disagg_minus, obj.operators.disagg_plus, ...
-                obj.config, obj.grid);
+                rhs_cfg, obj.grid);
 
             obj.rhs.validate();
 
             % Solve
             fprintf('Solving ODEs...\n');
-            [t, Y] = obj.solver.solve(obj.rhs, tspan, v0, p.Results.solver_options);
+            if do_operator_split
+                [t, Y] = obj.solveOperatorSplit(obj.rhs, tspan, v0, p.Results.solver_options);
+            else
+                [t, Y] = obj.solver.solve(obj.rhs, tspan, v0, p.Results.solver_options);
+            end
 
             % Store
             obj.result.time = t;
@@ -242,6 +264,71 @@ classdef CoagulationSimulation < handle
 
         function enableTracer(obj)
             warning('Tracer integration not yet implemented');
+        end
+
+        function [t_out, Y_out] = solveOperatorSplit(obj, rhs, tspan, v0, solver_options)
+            % Operator-split disaggregation: integrate without disagg,
+            % then redistribute above D_max after each outer step.
+
+            if length(tspan) < 1
+                error('tspan must have at least one time value');
+            end
+            if any(diff(tspan) <= 0)
+                error('tspan must be strictly increasing for operator_split');
+            end
+
+            t_out = tspan(:);
+            n_out = length(t_out);
+            n_sections = length(v0);
+            Y_out = zeros(n_out, n_sections);
+
+            current_t = t_out(1);
+            current_v = v0(:);
+            Y_out(1,:) = current_v';
+
+            % Determine outer timestep
+            outer_dt = obj.config.delta_t;
+            if isprop(obj.config,'disagg_outer_dt') && ~isempty(obj.config.disagg_outer_dt)
+                outer_dt = obj.config.disagg_outer_dt;
+            end
+            if outer_dt <= 0
+                error('disagg_outer_dt must be > 0');
+            end
+
+            tol = 1e-10;
+            if n_out > 1
+                output_dt = t_out(2) - t_out(1);
+                ratio = output_dt / outer_dt;
+                if abs(ratio - round(ratio)) > 1e-8
+                    error('operator_split requires output dt to be an integer multiple of disagg_outer_dt');
+                end
+                if outer_dt > output_dt + tol
+                    error('disagg_outer_dt must be <= output dt');
+                end
+            end
+
+            next_out = 2;
+            t_end = t_out(end);
+
+            while current_t < t_end - tol
+                t_next = min(current_t + outer_dt, t_end);
+
+                [t_step, y_step] = obj.solver.solve(rhs, [current_t t_next], current_v, solver_options);
+                current_t = t_step(end);
+                current_v = y_step(end,:)';
+
+                % Apply operator-split redistribution
+                current_v = DisaggregationOperatorSplit.apply(current_v, obj.grid, obj.config, current_t);
+
+                if next_out <= n_out && abs(current_t - t_out(next_out)) <= tol
+                    Y_out(next_out,:) = current_v';
+                    next_out = next_out + 1;
+                end
+            end
+
+            if next_out <= n_out
+                Y_out(next_out:end,:) = repmat(current_v', n_out - next_out + 1, 1);
+            end
         end
     end
 end
