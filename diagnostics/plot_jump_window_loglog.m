@@ -49,6 +49,8 @@ for i = 1:numel(plot_days)
 end
 xline(0.5, 'k--', '500 um');
 xline(2.0, 'k--', '2000 um');
+set(gca, 'XScale', 'log', 'YScale', 'log'); % force log-log axes
+xlim([1e-2 1e2]);
 grid on;
 xlabel('Diameter (mm)');
 ylabel('Mass spectrum');
@@ -64,6 +66,8 @@ for i = 1:numel(plot_days)
 end
 xline(0.5, 'k--', '500 um');
 xline(2.0, 'k--', '2000 um');
+set(gca, 'XScale', 'log', 'YScale', 'log'); % force log-log axes
+xlim([1e-2 1e2]);
 grid on;
 xlabel('Diameter (mm)');
 ylabel('Flux spectrum');
@@ -72,4 +76,4 @@ legend('Location','best');
 saveas(fig2, fullfile(fig_dir, 'legacy_jump_window_flux_loglog.png'));
 
 fprintf('\nSaved jump-window log-log figures to: %s\n', fig_dir);
-
+fprintf('Mass plot scales: X=%s Y=%s\n', get(gca,'XScale'), get(gca,'YScale'));

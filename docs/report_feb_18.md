@@ -5,6 +5,7 @@
 2. Log-log plots for size and flux.
 3. Sectional mass balance (what goes in and out of each bin).
 
+
 ### the peak?
 old model has a sharp jump at **63.25 -> 63.50 days**.
 
@@ -43,4 +44,3 @@ Closure summary shows very small RHS residuals.
 
 Selected bins: total in/out and dY/dt mostly match, with spike near jump time.  
 ![Selected bins total in out](figures/sectional_balance_selected_bins_total.png)
-
