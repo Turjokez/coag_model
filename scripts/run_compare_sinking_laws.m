@@ -68,7 +68,7 @@ for i = 1:numel(laws)
     cfg.sinking_size  = 'volume';
     cfg.sinking_scale = 1.0;
     if strcmp(cfg.sinking_law, 'kriest_8_capped')
-        cfg.sinking_w_max_mday = 70; % cap per Adrian-style diagnostic
+        cfg.sinking_w_max_mday = 70; % capped diagnostic setting
     end
     if strcmp(cfg.sinking_law, 'kriest_8_flat')
         cfg.sinking_d_flat_cm = 0.1; % 1 mm flat threshold
@@ -103,7 +103,7 @@ for i = 1:numel(laws)
     end
     all_flux_final(:,i) = flux_final_v;
 
-    % S/M/L fractions using Adrian cutoffs (500/2000 µm)
+    % S/M/L fractions using 500/2000 µm cutoffs
     d_cm_v = D_mm / 10; % mm -> cm (volume)
     d_cm_i = res.output_data.diam_i(:); % image diameter in cm
 

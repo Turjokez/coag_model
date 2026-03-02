@@ -1,5 +1,5 @@
 % run_mass_balance_biovolume.m
-% Biovolume-consistent mass-balance diagnostics (Adrian-style)
+% Biovolume-consistent mass-balance diagnostics
 
 clear; close all; clc;
 setup_paths

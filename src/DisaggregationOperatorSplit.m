@@ -7,7 +7,7 @@ classdef DisaggregationOperatorSplit
     %   - Distribute the remainder uniformly across all smaller bins
     %   - Zero out bins >= D_max
     %
-    % This matches the logic in Adrian's ResetInitialCond.m.
+    % This matches the logic in legacy ResetInitialCond.m.
 
     methods (Static)
         function v_out = apply(v_in, grid, cfg, t)

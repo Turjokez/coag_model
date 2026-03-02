@@ -51,7 +51,7 @@ for i = 1:numel(laws)
     cfg.sinking_size = 'volume';
     cfg.sinking_scale = 1.0;
     if strcmp(cfg.sinking_law, 'kriest_8_capped')
-        cfg.sinking_w_max_mday = 70; % cap per Adrian-style diagnostic
+        cfg.sinking_w_max_mday = 70; % capped diagnostic setting
     end
     if strcmp(cfg.sinking_law, 'kriest_8_flat')
         cfg.sinking_d_flat_cm = 0.1; % 1 mm flat threshold

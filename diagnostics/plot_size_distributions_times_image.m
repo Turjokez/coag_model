@@ -51,7 +51,7 @@ title('Size distributions vs time (image diameter)');
 legend('Location','best');
 % focus on relevant size range
 xlim([1e-2 1e2]);
-% Adrian cutoffs (500 µm, 2000 µm)
+% size cutoffs (500 µm, 2000 µm)
 xline(0.5,'--'); xline(2.0,'--');
 
 % Save
