@@ -39,7 +39,7 @@ which just means: take the shift in `b`, take the shift in `RMSE`, and ask how f
 
 ## first, i checked whether the process signal is bigger than fit-method spread
 
-This was one of the most diarect questions from the meeting. I built one benchmark with three fit methods: ordinary least squares in log-log space, Theil-Sen, and nonlinear least squares. Then i compared how much the metrics changed because the process changed, and how much they changed only because the fit method changed.
+This was one of the most direct questions from the meeting, so i started here. I did this in `run_fit_method_vs_process_benchmark.m`. The idea was simple: if a small process shift is not bigger than the fit-method spread, i should not read too much physics into it. I built one benchmark with three fit methods: ordinary least squares in log-log space, Theil-Sen, and nonlinear least squares. Then i compared how much the metrics changed because the process changed, and how much they changed only because the fit method changed.
 
 ![fit method versus process benchmark](figures/fit_method_vs_process_benchmark.png)
 
@@ -52,13 +52,13 @@ I still read this as a benchmark result, not a universal rule, because it depend
 
 ## then, i checked why the volume-diameter cases lie close to a straight line
 
-This was the other direct question from the meeting. I first checked how line-like the delta-space looked.
+This was the other direct question from the meeting. I first checked how line-like the delta-space looked in `run_volume_delta_linearity_check.m`.
 
 ![volume delta-linearity check](figures/volume_delta_linearity_check.png)
 
 The line was very strong in volume space. The correlation there was about `-0.981`, stronger than the image-space correlation. That made me think the line was probably real, but it still did not tell me whether it came from process physics or from the diameter map itself.
 
-So i checked that next.
+So i checked that next in `run_volume_metric_transform_benchmark.m`.
 
 ![volume metric transform benchmark](figures/volume_metric_transform_benchmark.png)
 
@@ -68,7 +68,7 @@ So my reading here is that the volume-space line is only partly a process story.
 
 ## then, i checked what was still left after that geometry part was removed
 
-Once the geometric paart was removed, i asked the next question: if that size-definition effect is taken out, do the sinking laws still stay different?
+Once the geometric part was removed, i asked the next question: if that size-definition effect is taken out, do the sinking laws still stay different? I did this in `run_sinking_law_residual_mechanism_benchmark.m`. The idea came naturally from the previous section: if the line is partly geometry, i still need to know what real physics is left after that part is removed.
 
 ![sinking-law residual mechanism](figures/sinking_law_residual_mechanism.png)
 
@@ -78,7 +78,7 @@ So this helped me say something stronger. The sink-law difference is not only a 
 
 ## then, i checked which metrics and which observation space are safer
 
-After that, the practical question became more important: once the PSD goes through a UVP-like observation step, which metric is safer to keep?
+After that, the practical question became more important: once the PSD goes through a UVP-like observation step, which metric is safer to keep? I ranked the metrics in `run_image_metric_rank_benchmark.m`, then compared image space and corrected volume space in `run_image_vs_volume_space_compare.m`. This part came from the meeting question about what observations can really tell us.
 
 ![image-space metric rank benchmark](figures/image_metric_rank_benchmark.png)
 
@@ -93,7 +93,7 @@ This is not the flashiest result in the report, but it may be one of the most us
 
 ## then, i checked fragmentation against stickiness and turbulence in that safer image space
 
-once image space looked safer, i kept the comparison there and used `delta b` plus `delta RMSE`.
+Once image space looked safer, i kept the comparison there and used `delta b` plus `delta RMSE`. I tested fragmentation against stickiness in `run_image_space_b_rmse_separability.m`, and fragmentation against turbulence in `run_image_space_b_rmse_turbulence.m`. The idea was simple here too: if image space is the safer observed space, then the next separation tests should be done there, not in the less stable corrected volume space.
 
 ![image-space fragmentation versus stickiness](figures/image_space_b_rmse_separability.png)
 
@@ -107,7 +107,7 @@ The result stayed similar. For the three non-`current` laws, strong fragmentatio
 
 ## then, a new pattern appeared: one common axis in image space
 
-After those image-space figures, a stronger pattern appeared. The non-`current` laws were not only grouped. They were moving mostly along one shared direction.
+After those image-space figures, a stronger pattern appeared. The non-`current` laws were not only grouped. They were moving mostly along one shared direction. I tested that directly in `run_image_space_common_axis_test.m`. The idea came from just looking at the image-space points and asking whether they were only clustered, or whether they were really lying on one main line.
 
 ![image-space common-axis test](figures/image_space_common_axis_test.png)
 
@@ -119,23 +119,27 @@ At this stage, i think this common-axis result is stronger than the later scalar
 
 ## then, i tested whether one scalar on that axis could summarize the process shift
 
-Once that common axis appeared, i tried to reduce the image-space shift to one scalar along that axis.
+Once that common axis appeared, i tried to reduce the image-space shift to one scalar along that axis. I used `run_image_space_axis_scalar_calibration.m` and `run_image_space_raw_vs_scalar_compare.m` for this. The idea came directly from the common-axis figure: if most of the signal sits on one line, maybe one scalar along that line can summarize the process shift.
 
 ![raw 2D versus calibrated scalar](figures/image_space_raw_vs_scalar_compare.png)
 
-The first compare showed that the pooled scalar correction was almost the same as the raw sampled `b + RMSE` view. it did not give a big gain by itself. but if i used the true process grouping in the correction, the separation became much stronger. That made the scalar idea look promising, but it also showed an immediate caution: the strong version was not blind yet. It already knew the process family.
+The first compare showed that the pooled scalar correction was almost the same as the raw sampled `b + RMSE` view. It did not give a big gain by itself. But if i used the true process grouping in the correction, the separation became much stronger. That made the scalar idea look promising, but it also showed an immediate caution: the strong version was not blind yet. It already knew the process family.
 
-i found some papers about low-dimensional size-distribution summaries have been used before, and process inference from size distributions is usually tested with synthetic and noisy data before being trusted ([Chan and Mozurkewich, 2007](https://acp.copernicus.org/articles/7/887/2007/acp-7-887-2007.html); [McGuffin et al., 2021](https://gmd.copernicus.org/articles/14/1821/2021/index.html)). ??????
+The idea for this came from two places. First, the common-axis figure itself suggested that most of the non-`current` response was living on one line, so it felt natural to ask whether one scalar along that line could summarize the shift. Second, i found nearby papers showing that low-dimensional size-distribution summaries are reasonable, and that process inference from size distributions should be checked with synthetic and noisy tests before being trusted ([Chan and Mozurkewich, 2007](https://acp.copernicus.org/articles/7/887/2007/acp-7-887-2007.html); [McGuffin et al., 2021](https://gmd.copernicus.org/articles/14/1821/2021/index.html)).
 
 ## then, i tested whether a small branch rule could recover that stronger scalar
 
-To make that scalar more practical, i tested whether a small observed-feature branch rule could pick the right correction.
+To make that scalar more practical, i tested whether a small observed-feature branch rule could pick the right correction. I did this in `run_image_space_axis_scalar_branch_richer.m`.
 
 ![richer branch prediction test](figures/image_space_axis_scalar_branch_richer.png)
 
+The idea for this came directly from the previous steps. First, the common-axis result suggested that the non-`current` cases were mostly moving on one line in image-space `delta b` and `delta RMSE`. Then the scalar test showed that a process-specific correction could work much better than one pooled correction, but only if the process family was already known. So the next question became simple: can the observed metric space itself guess that process family well enough before the correction is applied?
+
+Here the branch names were simple test rules that i made from the sampled metric space. `centroid_2d` means a nearest-center rule using two observed features, mainly sampled `delta b` and sampled `delta RMSE`. `centroid_4d` uses four observed features. The `knn` cases are nearest-neighbor rules, where the number tells how many nearby cases vote, and `2d` or `4d` tells how many observed features are used. So these were not special marine PSD methods taken from one marine-snow paper. They were simple test classifiers that i built to see whether the observed feature space could choose the correction branch in a reasonable way.
+
 This part was useful because it showed what does **not** work well yet. Even the richer branch tests only gave branch accuracy around `0.37` to `0.44`, and they did not beat the simple pooled linear correction in a convincing way. So the short version is that the richer branch idea is still weak in this observed space.
 
-so one pooled correction is too simple, but a small observed-feature branch rule is also too simple. So the common-axis scalar still looks more useful as a research clue and a model-space summary than as a finished blind observation metric.
+So one pooled correction is too simple, but a small observed-feature branch rule is also too simple. The common-axis scalar still looks more useful as a research clue and a model-space summary than as a finished blind observation metric.
 
 ## what i think
 
