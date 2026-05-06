@@ -1,0 +1,43 @@
+DS/shear ratio map check notes
+
+This file records what was checked in the ratio maps.
+
+1) Quantity plotted:
+log10(beta_DS / beta_shear)
+
+Note:
+If both terms are weighted by the same C1*C2, that factor cancels.
+So map pattern is the same for kernel ratio and weighted ratio.
+
+2) Kernel mode used:
+direct_sinking_law
+
+3) Color meaning:
+- negative value -> shear > DS -> blue
+- positive value -> DS > shear -> red
+
+4) Main result:
+When epsilon increases, DS-dominant area gets smaller.
+This is physically expected.
+
+Shape note:
+- current law shows a narrow V-shape near diagonal
+- literature laws show a wider band near diagonal
+- this comes from different sinking-law slope behavior
+
+Detailed values:
+
+eps=1.0e-08 law=current frac(DS>shear)=0.989 log10 ratio range=[-307.653, 10.428]
+eps=1.0e-08 law=kriest_8 frac(DS>shear)=0.968 log10 ratio range=[-307.653, 7.693]
+eps=1.0e-08 law=kriest_9 frac(DS>shear)=0.983 log10 ratio range=[-307.653, 7.994]
+eps=1.0e-08 law=siegel_2025 frac(DS>shear)=0.975 log10 ratio range=[-307.653, 7.849]
+
+eps=1.0e-06 law=current frac(DS>shear)=0.947 log10 ratio range=[-307.653, 9.428]
+eps=1.0e-06 law=kriest_8 frac(DS>shear)=0.845 log10 ratio range=[-307.653, 6.693]
+eps=1.0e-06 law=kriest_9 frac(DS>shear)=0.896 log10 ratio range=[-307.653, 6.994]
+eps=1.0e-06 law=siegel_2025 frac(DS>shear)=0.863 log10 ratio range=[-307.653, 6.849]
+
+eps=1.0e-04 law=current frac(DS>shear)=0.838 log10 ratio range=[-307.653, 8.428]
+eps=1.0e-04 law=kriest_8 frac(DS>shear)=0.627 log10 ratio range=[-307.653, 5.693]
+eps=1.0e-04 law=kriest_9 frac(DS>shear)=0.695 log10 ratio range=[-307.653, 5.994]
+eps=1.0e-04 law=siegel_2025 frac(DS>shear)=0.646 log10 ratio range=[-307.653, 5.849]

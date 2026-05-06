@@ -1,0 +1,20 @@
+DS beta map display check
+
+Figure:
+apr29_meeting_ds_beta_maps.png
+
+Check item:
+Colorbar top level in saved map is near 0 in log10(beta).
+
+Cross-check value from fixed-particle table:
+current law, d1=1 um, d2=10000 um
+beta_DS = 3.253824e+01 cm^3 s^-1
+log10(beta_DS) = 1.5124
+
+Meaning:
+Some top values are above the displayed colorbar top.
+So top-end contrast is clipped in this saved image.
+
+Action for next redraw:
+Use upper color limit >= +2
+or use separate colorbar per panel with clear note.
