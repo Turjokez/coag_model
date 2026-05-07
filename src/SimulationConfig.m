@@ -23,6 +23,7 @@ classdef SimulationConfig < matlab.mixin.Copyable
         
         sinking_law  = 'current';
         sinking_size = 'volume';
+        ds_kernel_mode = 'sinking_law'; % 'legacy' or 'sinking_law'
         enable_coag    = true;
         enable_sinking = true;
         enable_disagg  = false;
@@ -60,7 +61,8 @@ classdef SimulationConfig < matlab.mixin.Copyable
         t_init = 0.0;          % Initial time for integrations [d]
         t_final = 30.0;        % Final time for integrations [d]
         delta_t = 1.0;         % Time interval for output [d]
-        
+        proc_substeps = 10;    % sub-steps per delta_t for process-rate stability
+
         % Code Runtime Options
         tracer = false;         % Integrate tracer as well [false=no, true=yes]
     end
@@ -104,6 +106,11 @@ classdef SimulationConfig < matlab.mixin.Copyable
                 sz = lower(string(obj.sinking_size));
                 valid_sizes = ["volume","image"];
                 assert(any(sz == valid_sizes), 'sinking_size must be: volume or image');
+            end
+            if isprop(obj,'ds_kernel_mode') && ~isempty(obj.ds_kernel_mode)
+                mode = lower(string(obj.ds_kernel_mode));
+                valid_modes = ["legacy","sinking_law"];
+                assert(any(mode == valid_modes), 'ds_kernel_mode must be legacy or sinking_law');
             end
             if isprop(obj,'sinking_scale') && ~isempty(obj.sinking_scale)
                 assert(isfinite(obj.sinking_scale) && obj.sinking_scale >= 0, 'sinking_scale must be finite and >= 0');

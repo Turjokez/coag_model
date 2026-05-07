@@ -21,8 +21,8 @@ classdef BetaAssembler < handle
         end
 
         function betas = combineAndScale(obj, b_brown, b_shear, b_ds)
-            % Combine and scale different kernel contributions
-            % Scale Brownian by conBr*day_to_sec, shear by gamma*day_to_sec, DS by setcon*day_to_sec
+            % Combine and scale different kernel contributions.
+            % Law-aware DS returns beta/setcon so this same scaling still works.
         
             % ---- scale each contribution (NO alpha here) ----
             if ~isempty(b_brown) && ~isempty(b_brown.b1)

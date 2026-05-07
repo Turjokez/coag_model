@@ -78,7 +78,7 @@ classdef CoagulationSimulation < handle
             fprintf('Computing coagulation kernels...\n');
             b_brown = obj.assembler.computeFor('KernelBrown');
             b_shear = obj.assembler.computeFor('KernelCurSh');
-            b_ds    = obj.assembler.computeFor('KernelCurDS');
+            b_ds    = obj.assembler.computeFor(obj.dsKernelName());
 
             betas = obj.assembler.combineAndScale(b_brown, b_shear, b_ds);
             obj.operators.betas = betas; % keep for diagnostics
@@ -199,6 +199,21 @@ classdef CoagulationSimulation < handle
                 catch ME
                     warning('Could not calculate settling loss: %s', ME.message);
                 end
+            end
+        end
+
+        function kernel_name = dsKernelName(obj)
+            mode = "legacy";
+            if isprop(obj.config, 'ds_kernel_mode') && ~isempty(obj.config.ds_kernel_mode)
+                mode = lower(string(obj.config.ds_kernel_mode));
+            end
+
+            if mode == "sinking_law"
+                kernel_name = 'KernelCurDSSinkingLaw';
+            else
+                warning(['ds_kernel_mode is legacy. Using old DS kernel (KernelCurDS). ', ...
+                    'Selected sinking_law will not change DS values.']);
+                kernel_name = 'KernelCurDS';
             end
         end
 

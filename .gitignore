@@ -1,13 +1,26 @@
 # macOS
 .DS_Store
 
+# editor
+*.swp
+*.swo
+
 # MATLAB
 *.asv
 *.m~
+*.mat
+
+# generated log/table outputs mixed into figures folder
+docs/figures/*.txt
+docs/figures/*.csv
+
+# internal notes and tooling
+docs/note_*.md
+CLAUDE.md
+.claude/
 
 # Generated outputs
 output/
-*.mat
 
 # Accidental nested repo
 coag_model/
