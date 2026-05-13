@@ -47,13 +47,13 @@ $$
 \beta_{\mathrm{DS}} = \frac{\pi}{2}\, r_{\mathrm{small}}^2\, |w_1 - w_2|
 $$
 
-where $r_g = (r_1 + r_2) \cdot 1.6$, $\varepsilon$ is the curvilinear efficiency, and $r_{\text{small}} = \min(r_1, r_2) \cdot 1.6$. Settling speed from Kriest_8:
+where $r_g = (r_1 + r_2) \cdot 1.6$, $\varepsilon$ is the curvilinear efficiency, and $r_{\mathrm{small}} = \min(r_1, r_2) \cdot 1.6$. Settling speed from Kriest_8:
 
 $$
 w = B\, d_{\mathrm{eq}}^{0.62}, \quad B = 66\;[\mathrm{m\ day^{-1}\ cm^{-0.62}}], \quad d_{\mathrm{eq}}\ \mathrm{in\ cm}
 $$
 
-Parameters: $T = 293$ K, $\gamma = 0.1$ s^-1, $\alpha = 1.0$, $r_{\text{to\_rg}} = 1.6$.
+Parameters: $T = 293$ K, $\gamma = 0.1$ s^-1, $\alpha = 1.0$, and `r_to_rg = 1.6`.
 
 One structural difference: the sectional model uses $D_f = 2.33$ for aggregate radii; SLAMS uses $D = 2.0$. This affects $r_{\text{agg}}$ and all three kernels, so a perfect quantitative match is not expected.
 
@@ -141,4 +141,3 @@ Forward-Euler stability in SLAMS was also checked. With `n_sub=24` vs `n_sub=48`
 - SLAMS volume conservation is exact (0.00%) after adding the mass-scale bin-snap correction.
 - Sectional volume loss (−39.93%) is a top-bin truncation artefact, not a physics error i think.
 - The two algorithms are consistent in their qualitative behavior. Quantitative differences trace back to $D = 2$ vs $D_f = 2.33$, not to a mismatch in the collision physics.
-
